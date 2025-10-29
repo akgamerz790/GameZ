@@ -163,7 +163,6 @@
                 border-bottom: 1px solid var(--border-color);
             }
         }
-
     </style>
 </head>
 <body>
@@ -173,7 +172,7 @@
         <ul class="nav-links">
             <li class="nav-item"><a href="#birdfly" class="nav-link active">Bird Fly</a></li>
             <li class="nav-item"><a href="#gamebuild1" class="nav-link">Game Build 1</a></li>
-            <li class="nav-item"><a href="#GTA 7" class="nav-link">GTA 7</a></li>
+            <li class="nav-item"><a href="#gta7" class="nav-link">GTA 7</a></li>
         </ul>
     </nav>
 
@@ -191,6 +190,8 @@
             <p class="game-description">The first official build of a new and exciting game. Download the APK to test the early version and experience the gameplay firsthand.</p>
             <a href="https://github.com/akgamerz790/GameZ/raw/main/gamebuild1.apk" class="download-button" download>Download APK</a>
         </section>
+
+        <!-- Game Section: GTA 7 -->
         <section id="gta7" class="game-section">
             <h2 class="game-title">GTA 7 : Pre Release</h2>
             <p class="game-description">The first official build of a new and exciting game. Download the APK to test the early version and experience the gameplay firsthand.</p>
@@ -208,8 +209,15 @@
             const gameSections = document.querySelectorAll('.game-section');
 
             function showSection(hash) {
-                // Determine which section to show, default to the first one
-                const targetId = hash ? hash.substring(1) : gameSections[0].id;
+                // Sanitize the hash to remove the '#' and handle potential encoding issues
+                let targetId = hash ? hash.substring(1) : null;
+                if (!targetId) {
+                    // If no hash, default to the first section's ID
+                    targetId = gameSections.length > 0 ? gameSections[0].id : null;
+                }
+                
+                if (!targetId) return; // Exit if no sections are available
+
                 const targetSection = document.getElementById(targetId);
 
                 // Hide all sections
@@ -217,7 +225,7 @@
                     section.classList.remove('active');
                 });
 
-                // Show the target section
+                // Show the target section if it exists
                 if (targetSection) {
                     targetSection.classList.add('active');
                 }
@@ -225,6 +233,7 @@
                 // Update active state for nav links
                 navLinks.forEach(link => {
                     link.classList.remove('active');
+                    // Match the link's href with the targetId
                     if (link.getAttribute('href') === `#${targetId}`) {
                         link.classList.add('active');
                     }
@@ -236,7 +245,13 @@
                 link.addEventListener('click', (event) => {
                     event.preventDefault();
                     const hash = event.currentTarget.getAttribute('href');
-                    window.location.hash = hash; // Update URL hash for bookmarking
+                    // Only update hash if it's different to prevent redundant events
+                    if (window.location.hash !== hash) {
+                        window.location.hash = hash;
+                    } else {
+                        // If hash is the same, manually call showSection
+                        showSection(hash);
+                    }
                 });
             });
             
